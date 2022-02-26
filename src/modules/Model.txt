@@ -1,0 +1,22 @@
+import { model, Schema } from "mongoose";
+import { v4 } from "uuid";
+
+//the interface for a _name
+export interface I_Name {
+  id: string;
+  //typescript schema definitions here
+}
+
+//the _name schema
+const _NameSchema = new Schema<I_Name>({
+  id: {
+    default: v4,
+    type: String,
+    unique: true,
+    required: true,
+  },
+  //schme definitions here
+});
+
+//the _name model
+export const _NameModel = model("_name", _NameSchema);

@@ -1,0 +1,10 @@
+import { NextFunction, Request, Response } from "express";
+
+//the _name middleware
+export async function _NameMiddleWare(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  //the middleware code here
+}

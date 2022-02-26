@@ -1,11 +1,11 @@
-import { Category, EndCategory } from "./classes";
+#! /usr/bin/env node
+import { Category } from "./classes";
+import { Create } from "./project";
+import { Modules } from "./modules";
 
-const modules = new EndCategory(
-  "Add Modules",
-  "What type of module do you want to add?",
-  [{ msg: "Express Router", handler: () => console.log("Router") }],
-);
+const Global = new Category("global", "What do you want to do?", [
+  Create,
+  Modules,
+]);
 
-const global = new Category("global", "What do you want to do?", [modules]);
-
-global.run();
+Global.run();

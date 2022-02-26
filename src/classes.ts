@@ -45,6 +45,6 @@ export class EndCategory {
       }),
     );
 
-    this.answers[answer].handler();
+    await this.answers[answer].handler();
   }
 }

@@ -1,0 +1,19 @@
+import React, { createContext, ReactNode, useState } from "react";
+
+//the props for the context provider component
+type _NameContextProps = {
+  children: ReactNode | ReactNode[];
+};
+
+//type for the _name context
+export type _NameContextType = {};
+
+//the _name context
+export const _nameContext = createContext<_NameContextType>({});
+
+//the component providing the _name context
+export default function _NameContext({ children }: _NameContextProps) {
+  const [_name, set_Name] = useState<_NameContextType>({});
+
+  return <_nameContext.Provider value={_name}>{children}</_nameContext.Provider>;
+}

@@ -1,0 +1,13 @@
+import React from "react";
+
+//the props for the _name component
+type _NameComponentProps = {
+  //add props here
+};
+
+//the _name component
+export default function _NameComponent({}: _NameComponentProps) {
+  return (
+    <div>_NameComponent</div>
+  );
+}

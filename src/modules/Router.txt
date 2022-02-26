@@ -1,0 +1,6 @@
+import { Router } from "express"
+
+//the _name router
+export const _NameRouter = Router()
+
+//the _name methods here

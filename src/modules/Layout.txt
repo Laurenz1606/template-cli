@@ -1,0 +1,12 @@
+import React, { ReactNode } from "react";
+
+//the props for the _name layout
+type _NameLayoutProps = {
+  children: ReactNode | ReactNode[];
+  //add more props here
+};
+
+//the _name layout
+export default function _NameLayout({ children }: _NameLayoutProps) {
+  return <div>{children}</div>;
+}

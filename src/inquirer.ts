@@ -4,14 +4,19 @@ export const askMC = async (
   question: string,
   answers: { value: any; msg: string }[],
 ) => {
-  const x = await prompt({
-    message: question,
-    choices: answers.map((answer) => {
-      return { value: answer.value, name: answer.msg };
-    }),
-    name: "answer",
-    type: "list",
-  });
+  return (
+    await prompt({
+      message: question,
+      choices: answers.map((answer) => {
+        return { value: answer.value, name: answer.msg };
+      }),
+      name: "answer",
+      type: "list",
+    })
+  ).answer;
+};
 
-  return x["answer"];
+export const ask = async (question: string): Promise<string> => {
+  return (await prompt({ message: question, type: "input", name: "answer" }))
+    .answer;
 };

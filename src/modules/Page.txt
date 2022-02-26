@@ -1,0 +1,6 @@
+import React from "react";
+
+//the _name page
+export default function _NamePage() {
+  return <div>_Name</div>;
+}

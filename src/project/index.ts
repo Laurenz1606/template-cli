@@ -42,9 +42,7 @@ async function initPlain(noGit?: boolean) {
     `cd ${projectFolder} && yarn add -D typescript ts-node ts-node-dev @types/node rimraf`,
   );
 
-  execSync(
-    `cd ${projectFolder} && yarn add dotenv`,
-  );
+  execSync(`cd ${projectFolder} && yarn add dotenv @laurenz1606/logger`);
 
   const packageJSONPath = join(projectFolder, "package.json");
 
@@ -75,7 +73,13 @@ async function initPlain(noGit?: boolean) {
     {},
   );
 
-  if(!noGit) execSync(`git add . && git commit -m "init project" && git push`)
+  copyAndReplaceFile(
+    join(__dirname, "env.plain.txt"),
+    join(projectFolder, ".env"),
+    {},
+  );
+
+  if (!noGit) execSync(`git add . && git commit -m "init project" && git push`);
 }
 
 async function initReact(noGit?: boolean) {}

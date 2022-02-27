@@ -1,0 +1,38 @@
+import Auth from "@authfunctions/express";
+import { logger } from "./logger";
+
+//new auth instance
+export const auth = new Auth({
+  accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET || "",
+  refreshTokenSecret: process.env.JWT_REFRESH_TOKEN_SECRET || "",
+  emailValidation: true,
+  expiresIn: Number(process.env.JWT_EXPIRESS_IN) || 900,
+  passwordValidation: "Y-Y-Y-Y-8",
+});
+
+//use the logger
+auth.logger((level, data) => logger.log(level, data));
+
+//get the user by their mail
+auth.use("getUserByMail", async ({ email }) => {});
+
+//get the user by their username
+auth.use("getUserByName", async ({ username }) => {});
+
+//store a token
+auth.use("storeUser", async (userdata) => {});
+
+//check if a token exists
+auth.use("checkToken", async ({ token }) => {});
+
+//store a token
+auth.use("storeToken", async ({ token }) => {});
+
+//delete a token
+auth.use("deleteToken", async ({ token }) => {});
+
+//intercept the login
+auth.intercept("login", async (userData) => {});
+
+//intercept the register
+auth.intercept("register", async (userData) => {});

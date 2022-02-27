@@ -20,3 +20,8 @@ export const ask = async (question: string): Promise<string> => {
   return (await prompt({ message: question, type: "input", name: "answer" }))
     .answer;
 };
+
+export const askC = async (question: string) => {
+  return (await prompt({ message: question, type: "confirm", name: "answer" }))
+    .answer;
+};

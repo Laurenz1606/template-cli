@@ -1,10 +1,10 @@
 #! /usr/bin/env node
 import { Category } from "./classes";
-import { Create } from "./project";
+import { Projects } from "./projects";
 import { Modules } from "./modules";
 
 const Global = new Category("global", "What do you want to do?", [
-  Create,
+  Projects,
   Modules,
 ]);
 

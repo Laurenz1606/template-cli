@@ -1,4 +1,7 @@
-import { readFileSync, writeFileSync } from "fs";
+import { execSync } from "child_process";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
+import slugify from "slugify";
+import { askC } from "./inquirer";
 
 export async function copyAndReplaceFile(
   from: string,
@@ -20,4 +23,22 @@ export function uppercaseFirstLetter(string: string) {
 
 export function lowercaseFirstLetter(string: string) {
   return string.charAt(0).toLowerCase() + string.slice(1);
+}
+
+export function run(origin: string, commands: string) {
+  execSync(`cd ${origin} && ${commands}`, { stdio: "ignore" });
+}
+
+export function slg(name: string) {
+  return slugify(name, { strict: true, lower: true });
+}
+
+export async function notifyAndRMFolder(path: string, slug: string) {
+  if (existsSync(path)) {
+    const yn = await askC(
+      `Folder ${slug} alredy exists, do you want to delete it?`,
+    );
+    if (!yn) process.exit(0);
+    if (existsSync(path)) rmSync(path, { recursive: true });
+  }
 }

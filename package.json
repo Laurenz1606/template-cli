@@ -11,6 +11,7 @@
     "template-cli": "dist/index.js"
   },
   "scripts": {
+    "prepublish": "yarn build",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "build": "rimraf dist && tsc && copyfiles -u 1 ./src/**/*.txt ./dist"

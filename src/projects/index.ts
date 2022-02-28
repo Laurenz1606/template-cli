@@ -3,41 +3,32 @@ import { EndCategory } from "../classes";
 import { join } from "path";
 import {
   appendFileSync,
-  existsSync,
+  copyFileSync,
   mkdirSync,
   readFileSync,
   rmSync,
   writeFileSync,
 } from "fs";
-import slugify from "slugify";
-import { execSync } from "child_process";
-import { copyAndReplaceFile } from "../utils";
+import { notifyAndRMFolder, run, slg } from "../utils";
 
-export const Create = new EndCategory(
+export const Projects = new EndCategory(
   "Create Project",
   "What type of project do you want to create?",
   [
-    { msg: "Node (Backend)", handler: () => initPlain(true) },
+    { msg: "Node (Backend)", handler: () => initPlain() },
     { msg: "React (Frontend)", handler: () => initReact() },
   ],
 );
 
 async function initPlain(noGit?: boolean, subfolder?: string) {
   const name = await ask("What is the name of your Project?");
-
-  const slug = slugify(name, { strict: true, lower: true });
+  const slug = slg(name);
 
   const projectFolder = subfolder
     ? join(process.cwd(), slug, subfolder)
     : join(process.cwd(), slug);
 
-  if (existsSync(projectFolder)) {
-    const yn = await askC(
-      `Folder ${slug} alredy exists, do you want to delete it?`,
-    );
-    if (!yn) process.exit(0);
-    if (existsSync(projectFolder)) rmSync(projectFolder, { recursive: true });
-  }
+  await notifyAndRMFolder(projectFolder, slug);
 
   mkdirSync(projectFolder, { recursive: true });
 
@@ -46,11 +37,12 @@ async function initPlain(noGit?: boolean, subfolder?: string) {
   if (!noGit) giturl = await ask("What is the Github url your Project?");
 
   if (!noGit)
-    execSync(
-      `cd ${projectFolder} && git init && echo # ${slug} >> README.md && git add README.md && git commit -m "init README" && git branch -M main && git remote add origin ${giturl} && git push -u origin main`,
+    run(
+      projectFolder,
+      `git init && echo # ${slug} >> README.md && git add README.md && git commit -m "init README" && git branch -M main && git remote add origin ${giturl} && git push -u origin main`,
     );
 
-  execSync(`cd ${projectFolder} && yarn init -y`);
+  run(projectFolder, "yarn init -y");
 
   const packageJSONPath = join(projectFolder, "package.json");
 
@@ -62,49 +54,36 @@ async function initPlain(noGit?: boolean, subfolder?: string) {
     "dev:watch": "ts-node-dev --respawn src/index.ts",
   };
 
-  packageJSON.main = "dist/index.js"
+  packageJSON.main = "dist/index.js";
 
   writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, 2));
 
-  execSync(
-    `cd ${projectFolder} && yarn add -D typescript ts-node ts-node-dev @types/node rimraf`,
+  run(
+    projectFolder,
+    "yarn add -D typescript ts-node ts-node-dev @types/node rimraf",
   );
 
-  execSync(`cd ${projectFolder} && yarn add dotenv @laurenz1606/logger`);
+  run(projectFolder, "yarn add dotenv @laurenz1606/logger");
 
   if (!noGit)
-    copyAndReplaceFile(
+    copyFileSync(
       join(__dirname, "gitignore.txt"),
       join(projectFolder, ".gitignore"),
-      {},
     );
 
   let srcFolder = join(projectFolder, "src");
 
   mkdirSync(join(projectFolder, "src"));
 
-  copyAndReplaceFile(
-    join(__dirname, "index.txt"),
-    join(srcFolder, "index.ts"),
-    {},
-  );
+  copyFileSync(join(__dirname, "index.txt"), join(srcFolder, "index.ts"));
 
-  copyAndReplaceFile(
-    join(__dirname, "logger.txt"),
-    join(srcFolder, "logger.ts"),
-    {},
-  );
+  copyFileSync(join(__dirname, "logger.txt"), join(srcFolder, "logger.ts"));
 
-  copyAndReplaceFile(
-    join(__dirname, "env.plain.txt"),
-    join(projectFolder, ".env"),
-    {},
-  );
+  copyFileSync(join(__dirname, "env.plain.txt"), join(projectFolder, ".env"));
 
-  copyAndReplaceFile(
+  copyFileSync(
     join(__dirname, "tsconfig.server.txt"),
     join(projectFolder, "tsconfig.json"),
-    {},
   );
 
   const utilsFolder = join(srcFolder, "utils");
@@ -116,14 +95,11 @@ async function initPlain(noGit?: boolean, subfolder?: string) {
   const mongoose = await askC("Do you want to add Mongoose to your Project?");
 
   if (mongoose) {
-    execSync(
-      `cd ${projectFolder} && yarn add mongoose uuid && yarn add -D @types/uuid`,
-    );
+    run(projectFolder, "yarn add mongoose uuid && yarn add -D @types/uuid");
 
-    copyAndReplaceFile(
+    copyFileSync(
       join(__dirname, "mongoose.txt"),
       join(srcFolder, "mongoose.ts"),
-      {},
     );
 
     appendFileSync(
@@ -143,14 +119,11 @@ async function initPlain(noGit?: boolean, subfolder?: string) {
   const redis = await askC("Do you want to add IOredis to your Project?");
 
   if (redis) {
-    execSync(
-      `cd ${projectFolder} && yarn add ioredis && yarn add -D @types/ioredis`,
-    );
+    run(projectFolder, "yarn add ioredis && yarn add -D @types/ioredis");
 
-    copyAndReplaceFile(
+    copyFileSync(
       join(__dirname, "redisClient.txt"),
       join(srcFolder, "redisClient.ts"),
-      {},
     );
 
     appendFileSync(
@@ -164,15 +137,12 @@ async function initPlain(noGit?: boolean, subfolder?: string) {
   );
 
   if (express) {
-    execSync(
-      `cd ${projectFolder} && yarn add express cors && yarn add -D @types/express @types/cors`,
+    run(
+      projectFolder,
+      "yarn add express cors && yarn add -D @types/express @types/cors",
     );
 
-    copyAndReplaceFile(
-      join(__dirname, "express.txt"),
-      join(srcFolder, "express.ts"),
-      {},
-    );
+    copyFileSync(join(__dirname, "express.txt"), join(srcFolder, "express.ts"));
 
     appendFileSync(
       join(projectFolder, ".env"),
@@ -181,7 +151,7 @@ async function initPlain(noGit?: boolean, subfolder?: string) {
 
     appendFileSync(join(srcFolder, "index.ts"), `\nimport "./express"`);
 
-    const middleWare = join(srcFolder, "MiddleWare");
+    const middleWare = join(srcFolder, "MiddleWares");
 
     mkdirSync(middleWare);
 
@@ -198,13 +168,9 @@ async function initPlain(noGit?: boolean, subfolder?: string) {
     );
 
     if (auth) {
-      execSync(`cd ${projectFolder} && yarn add @authfunctions/express`);
+      run(projectFolder, "yarn add @authfunctions/express");
 
-      copyAndReplaceFile(
-        join(__dirname, "auth.txt"),
-        join(srcFolder, "auth.ts"),
-        {},
-      );
+      copyFileSync(join(__dirname, "auth.txt"), join(srcFolder, "auth.ts"));
 
       appendFileSync(
         join(projectFolder, ".env"),
@@ -216,9 +182,16 @@ async function initPlain(noGit?: boolean, subfolder?: string) {
   appendFileSync(join(srcFolder, "index.ts"), `\n`);
 
   if (!noGit)
-    execSync(
-      `cd ${projectFolder} && git add . && git commit -m "init project" && git push`,
-    );
+    run(projectFolder, `git add . && git commit -m "init project" && git push`);
 }
 
-async function initReact(noGit?: boolean) {}
+async function initReact(noGit?: boolean, subfolder?: string) {
+  // const name = await ask("What is the name of your Project?");
+  // const slug = slg(name);
+
+  // const projectFolder = subfolder
+  //   ? join(process.cwd(), slug, subfolder)
+  //   : join(process.cwd(), slug);
+
+  // await notifyAndRMFolder(projectFolder, slug);
+}

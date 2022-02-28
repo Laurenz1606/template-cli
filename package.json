@@ -1,6 +1,6 @@
 {
   "name": "@laurenz1606/template-cli",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "A template cli for creating nodeJS templates.",
   "main": "dist/index.js",
   "repository": "https://github.com/Laurenz1606/template-cli.git",

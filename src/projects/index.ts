@@ -20,7 +20,7 @@ export const Projects = new EndCategory(
   ],
 );
 
-async function initPlain(noGit?: boolean, subfolder?: string) {
+async function initPlain(subfolder?: string) {
   const name = await ask("What is the name of your Project?");
   const slug = slg(name);
 
@@ -33,14 +33,6 @@ async function initPlain(noGit?: boolean, subfolder?: string) {
   mkdirSync(projectFolder, { recursive: true });
 
   let giturl = "";
-
-  if (!noGit) giturl = await ask("What is the Github url your Project?");
-
-  if (!noGit)
-    run(
-      projectFolder,
-      `git init && echo # ${slug} >> README.md && git add README.md && git commit -m "init README" && git branch -M main && git remote add origin ${giturl} && git push -u origin main`,
-    );
 
   run(projectFolder, "yarn init -y");
 
@@ -65,11 +57,10 @@ async function initPlain(noGit?: boolean, subfolder?: string) {
 
   run(projectFolder, "yarn add dotenv @laurenz1606/logger");
 
-  if (!noGit)
-    copyFileSync(
-      join(__dirname, "gitignore.txt"),
-      join(projectFolder, ".gitignore"),
-    );
+  copyFileSync(
+    join(__dirname, "gitignore.txt"),
+    join(projectFolder, ".gitignore"),
+  );
 
   let srcFolder = join(projectFolder, "src");
 
@@ -180,18 +171,13 @@ async function initPlain(noGit?: boolean, subfolder?: string) {
   }
 
   appendFileSync(join(srcFolder, "index.ts"), `\n`);
-
-  if (!noGit)
-    run(projectFolder, `git add . && git commit -m "init project" && git push`);
 }
 
 async function initReact(noGit?: boolean, subfolder?: string) {
   // const name = await ask("What is the name of your Project?");
   // const slug = slg(name);
-
   // const projectFolder = subfolder
   //   ? join(process.cwd(), slug, subfolder)
   //   : join(process.cwd(), slug);
-
   // await notifyAndRMFolder(projectFolder, slug);
 }

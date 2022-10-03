@@ -3,16 +3,15 @@ import { v4 } from "uuid";
 
 //the interface for a _name
 export interface I_Name {
-  id: string;
+  _id: string;
   //typescript schema definitions here
 }
 
 //the _name schema
 const _NameSchema = new Schema<I_Name>({
-  id: {
+  _id: {
     default: v4,
     type: String,
-    unique: true,
     required: true,
   },
   //schme definitions here
